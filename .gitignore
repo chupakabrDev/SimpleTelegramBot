@@ -1,0 +1,65 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+*.zip
+*.tar.gz
+*.tgz
+
+# --- Virtualenv / venv ---
+venv/
+.venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# --- PyCharm / JetBrains ---
+.idea/
+*.iml
+*.ipr
+*.iws
+shelf/
+
+# --- PyCharm: пользовательские файлы (если .idea не игнорируется полностью) ---
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# --- Тесты и покрытие ---
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints
+
+# --- Секреты и локальные файлы ---
+# .env
+# config.ini
+*.log
+*.sqlite3
