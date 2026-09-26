@@ -1,4 +1,4 @@
-from aiogram import F, Router
+from aiogram import Router
 
 from . import basic_commands
 
