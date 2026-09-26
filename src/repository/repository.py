@@ -37,6 +37,11 @@ class Repository(ABC, Generic[TElement]):
     def delete(self, key: int) -> Optional[TElement]:
         raise NotImplementedError
 
+    @abstractmethod
+    def count(self) -> int:
+        raise NotImplementedError
+
+
 class InMemoryRepository(Repository[TElement]):
     def __init__(self, generated: bool = True):
         super().__init__(generated)
@@ -71,3 +76,6 @@ class InMemoryRepository(Repository[TElement]):
 
     def delete(self, key: int) -> Optional[TElement]:
         return self.elements.pop(key, None)
+
+    def count(self) -> int:
+        return len(self.elements)
