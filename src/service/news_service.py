@@ -16,7 +16,11 @@ class NewsService:
             user_likes = UserLikes(news)
             self.likes_repo.update_or_create(user_likes)
 
-        return user_likes.like(user)
+        if user_likes.like(user):
+            self.likes_repo.update_or_create(user_likes)
+            return True
+
+        return False
 
     def unlike_news(self, news: News, user: User) -> bool:
         user_likes = self.likes_repo.retrieve(news.key)
