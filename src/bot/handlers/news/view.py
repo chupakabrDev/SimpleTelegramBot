@@ -4,7 +4,6 @@ from entity import News, UserLikes
 from repository import Repository
 from service import NewsService, UserService
 from .callback import NewsCallbackData, NewsCallbackType
-
 from .render import render_news
 
 router = Router(name="news_view")

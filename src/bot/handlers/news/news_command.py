@@ -4,7 +4,6 @@ from aiogram.filters import Command, CommandObject
 from entity import News, UserLikes
 from repository import Repository
 from .callback import PaginationCallbackType, PaginationCallbackData
-
 from .render import render_news_page
 
 router = Router(name="news")

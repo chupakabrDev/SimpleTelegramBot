@@ -1,10 +1,9 @@
 from aiogram import types
 
 from bot import config
-from entity import News, UserLikes, User
+from entity import News, UserLikes
 from repository import Repository
 from service import UserService
-
 from .keyboard import news_list_kb, news_item_kb
 
 

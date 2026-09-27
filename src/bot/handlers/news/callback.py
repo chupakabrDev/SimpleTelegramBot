@@ -3,6 +3,7 @@ from enum import Enum
 from aiogram import F
 from aiogram.filters.callback_data import CallbackData
 
+
 class NewsCallbackType(Enum):
     VIEW = "view"
     LIKE = "like"

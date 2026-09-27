@@ -1,10 +1,10 @@
 from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from .callback import NewsCallbackData, PaginationCallbackData
-from .helpers import likes_count
 from entity import News, UserLikes
 from repository import Repository
+from .callback import NewsCallbackData, PaginationCallbackData
+from .helpers import likes_count
 
 
 def news_list_kb(

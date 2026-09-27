@@ -1,4 +1,4 @@
-from entity import UserLikes, News
+from entity import UserLikes
 from repository import Repository
 
 
