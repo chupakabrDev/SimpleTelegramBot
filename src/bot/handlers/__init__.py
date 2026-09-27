@@ -1,10 +1,10 @@
 from aiogram import Router
 
-from . import news_command
+from .news import news_command
+from .news import news_routers
 
-
-def get_routers() -> list[Router]:
+def routers() -> list[Router]:
 
     return [
-        news_command.router,
+        *news_routers()
     ]

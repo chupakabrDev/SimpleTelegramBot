@@ -5,7 +5,7 @@ from typing import Any
 
 from aiogram import Bot, Dispatcher
 
-from bot.handlers import get_routers
+from bot.handlers import news_routers
 from entity import News, Comment, User, UserLikes
 from repository import InMemoryRepository
 from service import UserService
@@ -47,7 +47,7 @@ async def main():
 
     dp = Dispatcher()
     dp.workflow_data = init_dependencies(bot)
-    dp.include_routers(*get_routers())
+    dp.include_routers(*news_routers())
 
     print("Starting bot...")
     try:

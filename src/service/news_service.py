@@ -12,7 +12,7 @@ class NewsService:
 
     def toggle_like(self, news: int, user: User) -> bool:
         user_likes = self.likes_repo.retrieve(news)
-        if user_likes and user_likes.is_liked_by(user):
+        if user_likes and user_likes.is_liked_by(user.key):
             user_likes.unlike(user)
             self.likes_repo.update_or_create(user_likes)
 
