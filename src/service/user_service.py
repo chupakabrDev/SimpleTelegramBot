@@ -12,14 +12,15 @@ class UserService:
     bot: Bot
     user_repo: Repository[User]
 
-    def find_user(self, id: int) -> User | None:
+    async def find_user(self, id: int) -> User | None:
         user = self.user_repo.retrieve(id)
         if user is None:
             try:
-                chat = self.bot.get_chat(id)
+                chat = await self.bot.get_chat(id)
+
                 user = User(datetime.now(), chat.first_name, chat.last_name)
                 user.key = id
-            except TelegramBadRequest as _:
+            except TelegramBadRequest:
                 return None
 
         return user

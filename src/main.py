@@ -21,9 +21,9 @@ def init_dependencies(bot: Bot) -> dict[str, Any]:
     zero_user.key = 5741084752
     user_repo.update_or_create(zero_user)
 
-    news_repo.update_or_create(News(0, datetime.now(), "First News", "First news content"))
-    news_repo.update_or_create(News(0, datetime.now(), "Interested News", "some news content"))
-    news_repo.update_or_create(News(0, datetime.now(), "Original News", "and more news content"))
+    news_repo.update_or_create(News(5741084752, datetime.now(), "First News", "First news content"))
+    news_repo.update_or_create(News(5741084752, datetime.now(), "Interested News", "some news content"))
+    news_repo.update_or_create(News(5741084752, datetime.now(), "Original News", "and more news content"))
 
     news_service = NewsService(likes_repo, comment_repo)
     user_service = UserService(bot, user_repo)
