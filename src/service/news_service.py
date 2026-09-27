@@ -6,9 +6,9 @@ from repository import Repository
 
 class NewsService:
 
-    def __init__(self, likes_repo: Repository[UserLikes], comments_repo: Repository[Comment]):
+    def __init__(self, likes_repo: Repository[UserLikes], comment_repo: Repository[Comment]):
         self.likes_repo = likes_repo
-        self.comments_repo = comments_repo
+        self.comment_repo = comment_repo
 
     def toggle_like(self, news: int, user: User) -> bool:
         user_likes = self.likes_repo.retrieve(news)
@@ -47,5 +47,5 @@ class NewsService:
 
     def comment_news(self, news: News, user: User, content: str) -> Comment:
         comment = Comment(user.key, news.key, datetime.now(), content)
-        self.comments_repo.update_or_create(comment)
+        self.comment_repo.update_or_create(comment)
         return comment

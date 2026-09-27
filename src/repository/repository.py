@@ -60,8 +60,8 @@ class InMemoryRepository(Repository[TElement]):
 
     def update_or_create(self, element: TElement) -> int:
         if element.key not in self.elements and self.generated:
-            self.counter += 1
             element.key = self.counter
+            self.counter += 1
 
         self.elements[element.key] = element
 

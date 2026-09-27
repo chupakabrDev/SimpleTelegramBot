@@ -25,6 +25,11 @@ def init_dependencies(bot: Bot) -> dict[str, Any]:
     news_repo.update_or_create(News(5741084752, datetime.now(), "Interested News", "some news content"))
     news_repo.update_or_create(News(5741084752, datetime.now(), "Original News", "and more news content"))
 
+    comment_repo.update_or_create(Comment(5741084752, 1, datetime.now(), "Best comment content"))
+    comment_repo.update_or_create(Comment(5741084752, 1, datetime.now(), "Best comment content 1"))
+    comment_repo.update_or_create(Comment(5741084752, 1, datetime.now(), "Best comment content 2"))
+    comment_repo.update_or_create(Comment(5741084752, 1, datetime.now(), "Best comment content 3"))
+
     news_service = NewsService(likes_repo, comment_repo)
     user_service = UserService(bot, user_repo)
 

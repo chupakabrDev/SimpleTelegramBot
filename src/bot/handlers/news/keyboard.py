@@ -3,7 +3,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from entity import News, UserLikes
 from repository import Repository
-from .callback import NewsViewCallbackData, NewsPaginationCallbackData, NewsLikeCallbackData
+from .callback import NewsViewCallbackData, NewsPaginationCallbackData, NewsLikeCallbackData, NewsCommentCallbackData, \
+    CommentsPaginationCallbackData
 from .helpers import likes_count
 
 
@@ -54,9 +55,39 @@ def news_item_kb(news_id: int, user_id: int, likes_repo: Repository[UserLikes]) 
         callback_data=NewsLikeCallbackData(news_id=news_id).pack(),
         style=style
     ))
-    # builder.add(types.InlineKeyboardButton(
-    #     text="💬 Комментарии",
-    #     callback_data=NewsCallbackData.comments(news_id=news_id),
-    # ))
-    # builder.adjust(2)
+    builder.add(types.InlineKeyboardButton(
+        text="💬 Комментарии",
+        callback_data=NewsCommentCallbackData(news_id=news_id).pack(),
+    ))
+    builder.adjust(2)
+    return builder.as_markup()
+
+def comments_kb(
+    news_id: int,
+    page: int,
+    total_pages: int,
+) -> types.InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    prev_page = max(0, page - 1)
+    next_page = min(total_pages, page + 1)
+
+    builder.add(types.InlineKeyboardButton(
+        text="<-",
+        callback_data=CommentsPaginationCallbackData(
+            news_id=news_id,
+            curr_page=page,
+            new_page=prev_page,
+        ).pack(),
+    ))
+    builder.add(types.InlineKeyboardButton(
+        text="->",
+        callback_data=CommentsPaginationCallbackData(
+            news_id=news_id,
+            curr_page=page,
+            new_page=next_page,
+        ).pack(),
+    ))
+
+    builder.adjust(2)
     return builder.as_markup()

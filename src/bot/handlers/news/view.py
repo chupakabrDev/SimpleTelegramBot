@@ -1,10 +1,11 @@
 from aiogram import Router, types
 
-from entity import News, UserLikes
+from entity import News, UserLikes, Comment
 from repository import Repository
 from service import NewsService, UserService
-from .callback import NewsViewCallbackData, NewsLikeCallbackData
-from .render import render_news
+from .callback import NewsViewCallbackData, NewsLikeCallbackData, NewsCommentCallbackData, \
+    CommentsPaginationCallbackData
+from .render import render_news, render_comments_page
 
 router = Router(name="news_view")
 
@@ -44,4 +45,44 @@ async def news_toggle_like_callback(
         news_repo, likes_repo, user_service,
         edit=True,
     )
+    await callback.answer()
+
+@router.callback_query(NewsCommentCallbackData.filter())
+async def news_comments_callback(
+    callback: types.CallbackQuery,
+    callback_data: NewsCommentCallbackData,
+    news_repo: Repository[News],
+    comment_repo: Repository[Comment],
+    user_service: UserService,
+) -> None:
+    await render_comments_page(
+        callback.message,
+        callback_data.news_id,
+        0,
+        news_repo,
+        comment_repo,
+        user_service,
+        edit=False,
+    )
+    await callback.answer()
+
+
+@router.callback_query(CommentsPaginationCallbackData.filter())
+async def comments_page_callback(
+    callback: types.CallbackQuery,
+    callback_data: CommentsPaginationCallbackData,
+    news_repo: Repository[News],
+    comment_repo: Repository[Comment],
+    user_service: UserService,
+) -> None:
+    if callback_data.curr_page != callback_data.new_page:
+        await render_comments_page(
+            callback.message,
+            callback_data.news_id,
+            callback_data.new_page,
+            news_repo,
+            comment_repo,
+            user_service,
+            edit=True,
+        )
     await callback.answer()
