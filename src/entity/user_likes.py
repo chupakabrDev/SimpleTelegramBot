@@ -31,3 +31,6 @@ class UserLikes(Keyable):
 
     def __str__(self) -> str:
         return f"UserLikes(news={self.news.key}, count={self.count})"
+
+    def is_liked_by(self, user: User) -> bool:
+        return user.key in self.likes
