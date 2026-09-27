@@ -3,7 +3,7 @@ from aiogram.filters import Command, CommandObject
 
 from entity import News, UserLikes
 from repository import Repository
-from .callback import PaginationCallbackType, PaginationCallbackData
+from .callback import NewsPaginationCallbackData
 from .render import render_news_page
 
 router = Router(name="news")
@@ -27,10 +27,10 @@ async def news_command(
     await render_news_page(message, page, news_repo, likes_repo)
 
 
-@router.callback_query(PaginationCallbackType.NEWS.filter)
+@router.callback_query(NewsPaginationCallbackData.filter())
 async def news_page_callback(
     callback: types.CallbackQuery,
-    callback_data: PaginationCallbackData,
+    callback_data: NewsPaginationCallbackData,
     news_repo: Repository[News],
     likes_repo: Repository[UserLikes],
 ) -> None:

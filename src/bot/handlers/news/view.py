@@ -3,16 +3,16 @@ from aiogram import Router, types
 from entity import News, UserLikes
 from repository import Repository
 from service import NewsService, UserService
-from .callback import NewsCallbackData, NewsCallbackType
+from .callback import NewsViewCallbackData, NewsLikeCallbackData
 from .render import render_news
 
 router = Router(name="news_view")
 
 
-@router.callback_query(NewsCallbackType.VIEW.filter)
+@router.callback_query(NewsViewCallbackData.filter())
 async def news_open_callback(
     callback: types.CallbackQuery,
-    callback_data: NewsCallbackData,
+    callback_data: NewsViewCallbackData,
     news_repo: Repository[News],
     likes_repo: Repository[UserLikes],
     user_service: UserService,
@@ -24,10 +24,10 @@ async def news_open_callback(
     await callback.answer()
 
 
-@router.callback_query(NewsCallbackType.LIKE.filter)
+@router.callback_query(NewsLikeCallbackData.filter())
 async def news_toggle_like_callback(
     callback: types.CallbackQuery,
-    callback_data: NewsCallbackData,
+    callback_data: NewsLikeCallbackData,
     news_service: NewsService,
     likes_repo: Repository[UserLikes],
     news_repo: Repository[News],

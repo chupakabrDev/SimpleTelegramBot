@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from entity import News, UserLikes
 from repository import Repository
-from .callback import NewsCallbackData, PaginationCallbackData
+from .callback import NewsViewCallbackData, NewsPaginationCallbackData, NewsLikeCallbackData
 from .helpers import likes_count
 
 
@@ -19,7 +19,7 @@ def news_list_kb(
         likes = likes_count(likes_repo, item.key)
         builder.add(types.InlineKeyboardButton(
             text=f"title: {item.title} | likes: {likes}",
-            callback_data=NewsCallbackData.view(news_id=item.key),
+            callback_data=NewsViewCallbackData(news_id=item.key).pack(),
         ))
 
     prev_page = max(0, page - 1)
@@ -27,11 +27,11 @@ def news_list_kb(
 
     builder.add(types.InlineKeyboardButton(
         text="<-",
-        callback_data=PaginationCallbackData.news(curr_page=page, new_page=prev_page),
+        callback_data=NewsPaginationCallbackData(curr_page=page, new_page=prev_page).pack(),
     ))
     builder.add(types.InlineKeyboardButton(
         text="->",
-        callback_data=PaginationCallbackData.news(curr_page=page, new_page=next_page),
+        callback_data=NewsPaginationCallbackData(curr_page=page, new_page=next_page).pack(),
     ))
 
     builder.adjust(*([1] * len(news)), 2)
@@ -51,7 +51,7 @@ def news_item_kb(news_id: int, user_id: int, likes_repo: Repository[UserLikes]) 
 
     builder.add(types.InlineKeyboardButton(
         text=f"👍 {count}",
-        callback_data=NewsCallbackData.like(news_id=news_id),
+        callback_data=NewsLikeCallbackData(news_id=news_id).pack(),
         style=style
     ))
     # builder.add(types.InlineKeyboardButton(
