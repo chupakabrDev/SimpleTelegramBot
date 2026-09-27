@@ -10,6 +10,22 @@ class NewsService:
         self.likes_repo = likes_repo
         self.comments_repo = comments_repo
 
+    def toggle_like(self, news: News, user: User) -> bool:
+        user_likes = self.likes_repo.retrieve(news.key)
+        if user_likes and user_likes.is_liked_by(user):
+            user_likes.unlike(user)
+            self.likes_repo.update_or_create(user_likes)
+
+            return False
+
+        if not user_likes:
+            user_likes = UserLikes(news)
+
+        user_likes.like(user)
+        self.likes_repo.update_or_create(user_likes)
+
+        return True
+
     def like_news(self, news: News, user: User) -> bool:
         user_likes = self.likes_repo.retrieve(news.key)
         if not user_likes:
