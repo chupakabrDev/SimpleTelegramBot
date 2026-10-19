@@ -5,11 +5,12 @@ from typing import Any
 
 from aiogram import Bot, Dispatcher
 
-from bot.handlers import news_routers
+from bot.handlers import routers
 from entity import News, Comment, User, UserLikes
 from repository import InMemoryRepository
 from service import UserService
 from service.news_service import NewsService
+
 
 def init_dependencies(bot: Bot) -> dict[str, Any]:
     news_repo = InMemoryRepository[News]()
@@ -52,7 +53,7 @@ async def main():
 
     dp = Dispatcher()
     dp.workflow_data = init_dependencies(bot)
-    dp.include_routers(*news_routers())
+    dp.include_routers(*routers())
 
     print("Starting bot...")
     try:

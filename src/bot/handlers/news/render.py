@@ -31,7 +31,7 @@ async def render_news_page(
 async def render_news(
     target: types.Message,
     news_id: int,
-    user_id,
+    user_id: int,
     news_repo: Repository[News],
     likes_repo: Repository[UserLikes],
     user_service: UserService,
