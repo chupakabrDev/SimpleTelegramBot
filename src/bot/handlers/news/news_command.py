@@ -1,9 +1,14 @@
-from aiogram import Router, types
+import asyncio
+
+from aiogram import Router, types, Bot
 from aiogram.filters import Command, CommandObject
+from aiogram.fsm.context import FSMContext
 
 from entity import News, UserLikes
 from repository import Repository
 from .callback import NewsPaginationCallbackData
+from .fsm import NewsCreateFSM
+from .helpers import clear_state_after_timeout
 from .render import render_news_page
 
 router = Router(name="news")
@@ -26,6 +31,15 @@ async def news_command(
 
     await render_news_page(message, page, news_repo, likes_repo)
 
+@router.message(Command("write"))
+async def write_command(
+    message: types.Message,
+    state: FSMContext,
+    bot: Bot,
+) -> None:
+    await state.set_state(NewsCreateFSM.waiting_for_title)
+    asyncio.create_task(clear_state_after_timeout(bot, message.from_user.id, state, NewsCreateFSM.waiting_for_title, timeout=300))
+    await message.answer("Напишите заголовок новости")
 
 @router.callback_query(NewsPaginationCallbackData.filter())
 async def news_page_callback(

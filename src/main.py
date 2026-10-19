@@ -30,7 +30,7 @@ def init_dependencies(bot: Bot) -> dict[str, Any]:
     comment_repo.update_or_create(Comment(5741084752, 1, datetime.now(), "Best comment content 2"))
     comment_repo.update_or_create(Comment(5741084752, 1, datetime.now(), "Best comment content 3"))
 
-    news_service = NewsService(likes_repo, comment_repo)
+    news_service = NewsService(likes_repo, comment_repo, news_repo)
     user_service = UserService(bot, user_repo)
 
     return {
