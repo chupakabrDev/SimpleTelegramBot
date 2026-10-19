@@ -4,7 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from entity import News, UserLikes
 from repository import Repository
 from .callback import NewsViewCallbackData, NewsPaginationCallbackData, NewsLikeCallbackData, NewsCommentCallbackData, \
-    CommentsPaginationCallbackData
+    CommentsPaginationCallbackData, CreateCommentCallbackData
 from .helpers import likes_count
 
 
@@ -56,7 +56,12 @@ def news_item_kb(news_id: int, user_id: int, likes_repo: Repository[UserLikes]) 
         style=style
     ))
     builder.add(types.InlineKeyboardButton(
-        text="💬 Комментарии",
+        text=f"💬 Комментировать",
+        callback_data=CreateCommentCallbackData(news_id=news_id).pack(),
+        style=style
+    ))
+    builder.add(types.InlineKeyboardButton(
+        text="🗪 Комментарии",
         callback_data=NewsCommentCallbackData(news_id=news_id).pack(),
     ))
     builder.adjust(2)

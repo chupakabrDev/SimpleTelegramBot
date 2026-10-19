@@ -17,3 +17,6 @@ class CommentsPaginationCallbackData(CallbackData, prefix="comments_pagination")
     curr_page: int
     new_page: int
     news_id: int
+
+class CreateCommentCallbackData(CallbackData, prefix="comment_create"):
+    news_id: int

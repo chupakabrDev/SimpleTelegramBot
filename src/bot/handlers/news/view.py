@@ -1,10 +1,15 @@
-from aiogram import Router, types
+import asyncio
+
+from aiogram import Router, types, Bot, F
+from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
 
 from entity import News, UserLikes, Comment
 from repository import Repository
 from service import NewsService, UserService
 from .callback import NewsViewCallbackData, NewsLikeCallbackData, NewsCommentCallbackData, \
-    CommentsPaginationCallbackData
+    CommentsPaginationCallbackData, CreateCommentCallbackData
+from .fsm import CommentCreateFSM
 from .render import render_news, render_comments_page
 
 router = Router(name="news_view")
@@ -86,3 +91,37 @@ async def comments_page_callback(
             edit=True,
         )
     await callback.answer()
+
+async def clear_state_after_timeout(bot: Bot, chat_id: int, state: FSMContext, timeout: int = 300):
+    await asyncio.sleep(timeout)
+
+    current_state = await state.get_state()
+    if current_state == CommentCreateFSM.waiting_for_comment.state:
+        await state.clear()
+        await bot.send_message(chat_id=chat_id, text="Время ожидания для написания комментария истекло, попробуйте снова")
+
+@router.callback_query(CreateCommentCallbackData.filter())
+async def create_comment_callback(
+    callback: types.CallbackQuery,
+    callback_data: CreateCommentCallbackData,
+    state: FSMContext,
+    bot: Bot
+) -> None:
+    await state.set_state(CommentCreateFSM.waiting_for_comment)
+    await state.update_data(news_id=callback_data.news_id)
+
+    asyncio.create_task(clear_state_after_timeout(bot, callback.from_user.id, state, timeout=300))
+
+    await callback.message.answer("Напишите ваш комментарий:")
+
+    await callback.answer()
+
+@router.message(CommentCreateFSM.waiting_for_comment, F.text)
+async def process_create_comment(message: Message, state: FSMContext, news_service: NewsService, user_service: UserService) -> None:
+    user = await user_service.find_user(message.from_user.id)
+    news_id = await state.get_value("news_id")
+
+    news_service.comment_news(news_id, user, message.text)
+
+    await message.answer(f"Ваш комментарий принят")
+    await state.clear()

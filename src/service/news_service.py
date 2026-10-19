@@ -45,7 +45,7 @@ class NewsService:
 
         return False
 
-    def comment_news(self, news: News, user: User, content: str) -> Comment:
-        comment = Comment(user.key, news.key, datetime.now(), content)
+    def comment_news(self, news: int, user: User, content: str) -> Comment:
+        comment = Comment(user.key, news, datetime.now(), content)
         self.comment_repo.update_or_create(comment)
         return comment
