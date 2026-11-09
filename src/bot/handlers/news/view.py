@@ -1,8 +1,8 @@
 import asyncio
 
 from aiogram import Router, types, Bot, F
-from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 
 from entity import News, UserLikes, Comment
 from repository import Repository
@@ -111,27 +111,41 @@ async def create_comment_callback(
 
 @router.message(CommentCreateFSM.waiting_for_comment, F.text)
 async def process_create_comment(message: Message, state: FSMContext, news_service: NewsService, user_service: UserService) -> None:
+    content = message.text
+    if len(content) > 50:
+        await message.answer(f"Комментарий слишком длинный({len(content)}), напишите комментарий длиной не более 50:")
+        return
+
     user = await user_service.find_user(message.from_user.id)
     news_id = await state.get_value("news_id")
 
-    news_service.comment_news(news_id, user, message.text)
+    news_service.comment_news(news_id, user, content)
 
     await message.answer(f"Ваш комментарий принят")
     await state.clear()
 
 
 @router.message(NewsCreateFSM.waiting_for_title, F.text)
-async def process_create_comment(message: Message, state: FSMContext) -> None:
+async def process_write_title(message: Message, state: FSMContext) -> None:
+    title = message.text
+    if len(title) > 12:
+        await message.answer(f"Заголовок слишком длинный({len(title)}), напишите заголовок длиной не более 12:")
+        return
+
     await state.set_state(NewsCreateFSM.waiting_for_news)
-    await state.update_data(title=message.text)
+    await state.update_data(title=title)
 
     await message.answer(f"Теперь напишите новость")
 
 
 @router.message(NewsCreateFSM.waiting_for_news, F.text)
-async def process_create_comment(message: Message, state: FSMContext, news_service: NewsService, user_service: UserService) -> None:
-    title = await state.get_value("title")
+async def process_write_news(message: Message, state: FSMContext, news_service: NewsService, user_service: UserService) -> None:
     content = message.text
+    if len(content) > 12:
+        await message.answer(f"Новость слишком длинная({len(content)}), напишите новость длиной не более 100:")
+        return
+
+    title = await state.get_value("title")
     user = await user_service.find_user(message.from_user.id)
 
     news_service.write_news(user, title, content)
