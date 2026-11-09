@@ -57,8 +57,7 @@ def news_item_kb(news_id: int, user_id: int, likes_repo: Repository[UserLikes]) 
     ))
     builder.add(types.InlineKeyboardButton(
         text=f"💬 Комментировать",
-        callback_data=CreateCommentCallbackData(news_id=news_id).pack(),
-        style=style
+        callback_data=CreateCommentCallbackData(news_id=news_id).pack()
     ))
     builder.add(types.InlineKeyboardButton(
         text="🗪 Комментарии",
