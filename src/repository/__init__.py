@@ -1,3 +1,4 @@
 from .repository import Repository
-from .repository import InMemoryRepository
-from .repository import Keyable
+from .repository import SQLAlchemyRepository
+from .repository import Base
+from .repository import KeyedMixin

@@ -4,7 +4,6 @@ from bot import config
 from entity import News, UserLikes, Comment
 from repository import Repository
 from service import UserService
-from .helpers import comments_for_news
 from .keyboard import news_list_kb, news_item_kb, comments_kb
 
 
@@ -15,10 +14,11 @@ async def render_news_page(
     likes_repo: Repository[UserLikes],
     edit: bool = False,
 ) -> None:
-    start = page * config.news_page_size
-    news = news_repo.query(start, start + config.news_page_size)
+    news = news_repo.query_page(page, config.news_page_size)
 
-    total_pages = max(0, (news_repo.count() - 1) // config.news_page_size)
+    total = news_repo.count()
+    total_pages = (total + config.news_page_size - 1) // config.news_page_size
+
     markup = news_list_kb(news, likes_repo, page, total_pages)
 
     text = "Выберите новость"
@@ -74,21 +74,25 @@ async def render_comments_page(
         await target.answer("У новости невалидный автор")
         return
 
-    comments = comments_for_news(comment_repo, news_id)
-    total_comments = len(comments)
-    total_pages = (
-        max(0, (total_comments - 1) // config.comments_page_size)
-        if total_comments > 0
-        else 0
-    )
+    comments = comment_repo.query_page(page, config.comments_page_size, news=news_id)
+    total = comment_repo.count_filtered(news=news_id)
+    total_pages = (total + config.comments_page_size - 1) // config.comments_page_size
 
-    page = min(max(0, page), total_pages)
-    start = page * config.comments_page_size
-    page_comments = comments[start:start + config.comments_page_size]
+    # comments = comments_for_news(comment_repo, news_id)
+    # total_comments = len(comments)
+    # total_pages = (
+    #     max(0, (total_comments - 1) // config.comments_page_size)
+    #     if total_comments > 0
+    #     else 0
+    # )
+    #
+    # page = min(max(0, page), total_pages)
+    # start = page * config.comments_page_size
+    # page_comments = comments[start:start + config.comments_page_size]
 
     lines = [f"Комментарии к {news.title} | {news_author.name}"]
 
-    for comment in page_comments:
+    for comment in comments:
         comment_author = await user_service.find_user(comment.author)
         author_name = comment_author.name if comment_author is not None else "Unknown"
 

@@ -1,15 +1,18 @@
-from dataclasses import dataclass
 from datetime import datetime
 
-from src.repository.repository import Keyable
+from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
+
+from repository import Base, KeyedMixin
 
 
-@dataclass
-class News(Keyable):
-    author: int
-    creation_date: datetime
-    title: str
-    content: str
+class News(KeyedMixin, Base):
+    __tablename__ = "news"
+
+    author: Mapped[int] = mapped_column(ForeignKey("users.key"), index=True)
+    creation_date: Mapped[datetime] = mapped_column(DateTime)
+    title: Mapped[str] = mapped_column(String(255))
+    content: Mapped[str] = mapped_column(Text)
 
     def __str__(self) -> str:
         return (

@@ -5,7 +5,6 @@ from entity import News, UserLikes
 from repository import Repository
 from .callback import NewsViewCallbackData, NewsPaginationCallbackData, NewsLikeCallbackData, NewsCommentCallbackData, \
     CommentsPaginationCallbackData, CreateCommentCallbackData
-from .helpers import likes_count
 
 
 def news_list_kb(
@@ -17,14 +16,14 @@ def news_list_kb(
     builder = InlineKeyboardBuilder()
 
     for item in news:
-        likes = likes_count(likes_repo, item.key)
+        likes = likes_repo.count_filtered(news=item.key)
         builder.add(types.InlineKeyboardButton(
             text=f"title: {item.title} | likes: {likes}",
             callback_data=NewsViewCallbackData(news_id=item.key).pack(),
         ))
 
     prev_page = max(0, page - 1)
-    next_page = min(total_pages, page + 1)
+    next_page = min(total_pages - 1, page + 1)
 
     builder.add(types.InlineKeyboardButton(
         text="<-",
@@ -42,16 +41,13 @@ def news_list_kb(
 def news_item_kb(news_id: int, user_id: int, likes_repo: Repository[UserLikes]) -> types.InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    likes = likes_repo.retrieve(news_id)
-    count = 0
+    likes = likes_repo.count_filtered(news=news_id)
     style = "primary"
-    if likes is not None:
-        count = likes.count
-        if likes.is_liked_by(user_id):
-            style = "success"
+    if likes_repo.exists_by(UserLikes.user, user_id):
+        style = "success"
 
     builder.add(types.InlineKeyboardButton(
-        text=f"👍 {count}",
+        text=f"👍 {likes}",
         callback_data=NewsLikeCallbackData(news_id=news_id).pack(),
         style=style
     ))
@@ -74,7 +70,7 @@ def comments_kb(
     builder = InlineKeyboardBuilder()
 
     prev_page = max(0, page - 1)
-    next_page = min(total_pages, page + 1)
+    next_page = min(total_pages - 1, page + 1)
 
     builder.add(types.InlineKeyboardButton(
         text="<-",

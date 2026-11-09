@@ -1,14 +1,19 @@
-from dataclasses import dataclass
 from datetime import date
 
-from src.repository.repository import Keyable
+from sqlalchemy import Date, String
+from sqlalchemy.orm import (
+    Mapped, mapped_column,
+)
+
+from repository import Base, KeyedMixin
 
 
-@dataclass
-class User(Keyable):
-    registration_date: date
-    name: str
-    surname: str
+class User(KeyedMixin, Base):
+    __tablename__ = "users"
+
+    registration_date: Mapped[date] = mapped_column(Date)
+    name: Mapped[str] = mapped_column(String(100))
+    surname: Mapped[str] = mapped_column(String(100))
 
     def __str__(self) -> str:
         return (

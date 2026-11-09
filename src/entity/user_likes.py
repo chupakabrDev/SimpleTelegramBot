@@ -1,37 +1,17 @@
-from dataclasses import dataclass, field
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column
 
-from repository import Keyable
-from . import User
+from repository import Base, KeyedMixin
 
 
-@dataclass
-class UserLikes(Keyable):
-    news: int
-    likes: set[int] = field(default_factory=set)
+class UserLikes(KeyedMixin, Base):
+    __tablename__ = "user_likes"
+    __table_args__ = (
+        UniqueConstraint("news", "user", name="uq_user_likes_news_user"),
+    )
 
-    def __post_init__(self) -> None:
-        self._key = self.news
-
-    def like(self, user: User) -> bool:
-        """Поставить лайк. Возвращает False, если уже стоит."""
-        if user.key in self.likes:
-            return False
-        self.likes.add(user.key)
-        return True
-
-    def unlike(self, user: User) -> bool:
-        """Убрать лайк. Возвращает False, если лайка не было."""
-        if user.key not in self.likes:
-            return False
-        self.likes.remove(user.key)
-        return True
-
-    @property
-    def count(self) -> int:
-        return len(self.likes)
+    news: Mapped[int] = mapped_column(ForeignKey("news.key"), index=True)
+    user: Mapped[int] = mapped_column(ForeignKey("users.key"), index=True)
 
     def __str__(self) -> str:
-        return f"UserLikes(news={self.news}, count={self.count})"
-
-    def is_liked_by(self, user_id: int) -> bool:
-        return user_id in self.likes
+        return f"UserLikes(key={self.key}, news={self.news}, user={self.user})"

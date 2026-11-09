@@ -4,19 +4,25 @@ from os import getenv
 from typing import Any
 
 from aiogram import Bot, Dispatcher
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from bot.handlers import routers
 from entity import News, Comment, User, UserLikes
-from repository import InMemoryRepository
+from repository import SQLAlchemyRepository, Base
 from service import UserService
 from service.news_service import NewsService
 
 
 def init_dependencies(bot: Bot) -> dict[str, Any]:
-    news_repo = InMemoryRepository[News]()
-    comment_repo = InMemoryRepository[Comment]()
-    user_repo = InMemoryRepository[User](False)
-    likes_repo = InMemoryRepository[UserLikes](False)
+    engine = create_engine("sqlite:///app.db")
+    Base.metadata.create_all(engine)
+    SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
+
+    news_repo = SQLAlchemyRepository[News](SessionLocal, News)
+    comment_repo = SQLAlchemyRepository[Comment](SessionLocal, Comment)
+    user_repo = SQLAlchemyRepository[User](SessionLocal, User, False)
+    likes_repo = SQLAlchemyRepository[UserLikes](SessionLocal, UserLikes)
 
     zero_user = User(date.today(), "Bob", "Kovalski")
     zero_user.key = 5741084752
