@@ -1,12 +1,9 @@
-import copy
 import dataclasses
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Optional, cast, Any
 
-from sqlalchemy import select, func, exists, delete
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import select, func, delete
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session, MappedAsDataclass, Mapped, mapped_column
-
 
 TElement = TypeVar('TElement', bound='KeyedMixin')
 
@@ -14,10 +11,6 @@ class Repository(ABC, Generic[TElement]):
 
     def __init__(self, generated: bool = True):
         self.generated = generated
-
-    @abstractmethod
-    def query(self, key: int) -> list[TElement]:
-        raise NotImplementedError
 
     @abstractmethod
     def query_by(self, column: Mapped, value) -> list[TElement]:
@@ -79,11 +72,6 @@ class SQLAlchemyRepository(Repository[TElement]):
         super().__init__(generated)
         self._session_factory = session_factory
         self._model = model
-
-    def query(self, key: int) -> list[TElement]:
-        stmt = select().where(KeyedMixin.key == key).select_from(self._model)
-        with self._session_factory() as session:
-            return list(session.scalars(stmt))
 
     def query_by(self, column: Mapped, value) -> list[TElement]:
         stmt = select().where(column == value).select_from(self._model)
@@ -160,7 +148,6 @@ class SQLAlchemyRepository(Repository[TElement]):
         with self._session_factory() as session, session.begin():
             stmt = delete(self._model).where(column == value)
             session.execute(stmt)
-            session.commit()
 
     def delete(self, key: int) -> None:
         self.delete_by(self._model.key, key)
